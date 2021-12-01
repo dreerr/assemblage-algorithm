@@ -10,11 +10,11 @@ export const process = async (url, debug) => {
 
   // 1: reduce colors of image
   const imageDataReduced = await quantization(imageData);
-  if (debug) debug.append(canvasFromImageData(imageDataReduced));
+  // if (debug) debug.append(canvasFromImageData(imageDataReduced));
 
   // 2: vectorize image
   const vectorized = await vectorization(imageDataReduced);
-  if (debug) debug.append(nodeFromSvg(vectorized));
+  // if (debug) debug.append(nodeFromSvg(vectorized));
 
   // 3: rearrange the vectorized data
   const rearranged = await rearrange(vectorized, debug);

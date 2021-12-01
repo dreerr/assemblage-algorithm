@@ -7,8 +7,23 @@
 //@import 'scaffolding';
 
 
-img, canvas, svg {
-  max-height: 300px;
+.debug {
+  position: relative;
+  height: 800px;
+  max-width: 1300px;
+  margin: 0 auto;
+}
+
+canvas {
+  position: absolute;
+  width: 250px;
+  height: auto;
+  top: 0;
+}
+
+svg {
+  position: absolute;
+  right: 0;
+  height: 600px;
   width: auto;
-  padding: 1px;
 }
