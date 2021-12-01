@@ -1,55 +1,59 @@
 import { quantization } from '@/js/1-quantization'
 import { vectorization } from '@/js/2-vectorization'
-import { vectorization_new } from '@/js/2-vectorization-new'
 import { rearrange } from '@/js/3-rearranging'
 
 export const process = async (url, debug) => {
+
   // 0: get image data of url BEWARAE ONLY SAME ORIGIN!
   const imageData = await getImageData(url);
+  if (debug) debug.append(canvasFromImageData(imageData));
 
   // 1: reduce colors of image
   const imageDataReduced = await quantization(imageData);
-  if (debug) {
-    const img = new Image();
-    img.src = url;
-    debug.append(img);
-    // let canvas = document.createElement("canvas");
-    // canvas.width = imageDataReduced.width;
-    // canvas.height = imageDataReduced.height;
-    // var ctx = canvas.getContext("2d");
-    // ctx.putImageData(imageDataReduced, 0, 0);
-    // debug.append(canvas);
-  }
+  if (debug) debug.append(canvasFromImageData(imageDataReduced));
 
+  // 2: vectorize image
+  const vectorized = await vectorization(imageDataReduced);
+  if (debug) debug.append(nodeFromSvg(vectorized));
 
-  let afterVectorization = async result => {
-    if (debug) {
-      const span = document.createElement('span')
-      debug.append(span);
-      span.innerHTML = result;
-    }
-    rearrange(result).then(result => {
-      if (debug) {
-        const span = document.createElement('span')
-        debug.append(span);
-        span.innerHTML = result;
-      }
-    })
-  }
-  vectorization(imageDataReduced).then(afterVectorization);
-  //vectorization_new(imageDataReduced).then(afterVectorization);
-
+  // 3: rearrange the vectorized data
+  const rearranged = await rearrange(vectorized, debug);
+  return rearranged;
 }
 
 
-const getImageData = async url => {
-  const img = new Image();
+
+// Helper Functions
+const getImageData = async (url, maxSize = 1000) => {
+  let img = new Image();
   img.src = url;
   await img.decode();
-  var canvas = document.createElement('canvas');
-  canvas.width = img.width;
-  canvas.height = img.height;
-  var context = canvas.getContext('2d');
-  context.drawImage(img, 0, 0);
-  return context.getImageData(0, 0, img.width, img.height);
+  let w = img.width;
+  let h = img.height;
+  if (w > maxSize) {
+    h = h * (maxSize / w);
+    w = maxSize;
+  }
+  let canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  let context = canvas.getContext('2d');
+  context.drawImage(img, 0, 0, w, h);
+  return context.getImageData(0, 0, w, h);
+}
+
+// Helper Functions for Debug
+const canvasFromImageData = imageData => {
+  let canvas = document.createElement("canvas");
+  canvas.width = imageData.width;
+  canvas.height = imageData.height;
+  var ctx = canvas.getContext("2d");
+  ctx.putImageData(imageData, 0, 0);
+  return canvas;
+}
+
+const nodeFromSvg = svgData => {
+  const node = document.createElement('span')
+  node.innerHTML = svgData;
+  return node;
 }
