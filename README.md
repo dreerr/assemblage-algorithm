@@ -2,7 +2,7 @@
 
 ## TODOs:
 
-* Image Resizing und Image Data Workflow
+* ☑️ Image Resizing und Image Data Workflow
 * Save as Image again
 * Color quantization
     * not ideal color distribution yet
