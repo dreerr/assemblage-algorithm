@@ -43,7 +43,7 @@ export const rearrange = async (svg, debug) => {
 
     allPaths.forEach((el, idx) => {
       // check size and delete if too small
-      if (area(el) < 500000 && idx > 20 && el.parent().data('visited') == true) {
+      if ((area(el) < 500000 && idx > 20 && el.parent().data('visited') == true) || area(el) < 5000) {
         el.remove();
         return;
       };
@@ -65,8 +65,8 @@ export const rearrange = async (svg, debug) => {
 
       // FAIL with Sinus, need more config I think
       // TODO
-      let xPos = Math.sin(random(0, Math.PI)) * 0.5 + 0.25;
-      let yPos = Math.sin(random(0, Math.PI)) * 0.5 + 0.25;
+      let xPos = Math.sin(random(0, Math.PI)) * 0.5 + 0.2;
+      let yPos = Math.sin(random(0, Math.PI)) * 0.5 + 0.2;
       el.center(xPos * w / 0.1, (yPos * h - h) / -0.1);
 
       // let relSize = (area(el) / (area(draw)*100) * 100) + 0.1;
@@ -78,6 +78,13 @@ export const rearrange = async (svg, debug) => {
         scale: random(1, 3),
         rotate: random(-90, 90)
       }, draw)
+
+      if (area(el) < 15000) {
+        el.transform({
+          scale: random(1, 10),
+        }, draw)
+      }
+
       el.css('filter', 'drop-shadow(0 0 180px rgba(0, 0, 0, 0.15)')
       // TODO: move inline style to https://developer.mozilla.org/en-US/docs/Web/SVG/Element/style
 

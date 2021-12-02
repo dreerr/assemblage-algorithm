@@ -1,6 +1,8 @@
 import { quantization } from '@/js/1-quantization'
 import { vectorization } from '@/js/2-vectorization'
 import { rearrange } from '@/js/3-rearranging'
+import axios from 'axios'
+import { Buffer } from 'buffer'
 
 export const process = async (url, debug) => {
 
@@ -26,7 +28,7 @@ export const process = async (url, debug) => {
 // Helper Functions
 const getImageData = async (url, maxSize = 1000) => {
   let img = new Image();
-  img.src = url;
+  img.src = await getBase64(url);
   await img.decode();
   let w = img.width;
   let h = img.height;
@@ -43,7 +45,7 @@ const getImageData = async (url, maxSize = 1000) => {
 }
 
 // Helper Functions for Debug
-const canvasFromImageData = imageData => {
+const canvasFromImageData = (imageData) => {
   let canvas = document.createElement("canvas");
   canvas.width = imageData.width;
   canvas.height = imageData.height;
@@ -52,7 +54,17 @@ const canvasFromImageData = imageData => {
   return canvas;
 }
 
-const nodeFromSvg = svgData => {
+const getBase64 = async (url) => {
+  try {
+    let image = await axios.get(url, { responseType: 'arraybuffer' });
+    let raw = Buffer.from(image.data).toString('base64');
+    return "data:" + image.headers["content-type"] + ";base64," + raw;
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+const nodeFromSvg = (svgData) => {
   const node = document.createElement('span')
   node.innerHTML = svgData;
   return node;
