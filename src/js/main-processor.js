@@ -1,71 +1,60 @@
-import { quantization } from '@/js/1-quantization'
-import { vectorization } from '@/js/2-vectorization'
-import { rearrange } from '@/js/3-rearranging'
-import axios from 'axios'
-import { Buffer } from 'buffer'
+const fs = require('fs');
+const path = require('path');
 
-export const process = async (url, debug) => {
+const { createCanvas, loadImage } = require('canvas');
 
-  // 0: get image data of url BEWARAE ONLY SAME ORIGIN!
+const { quantization } = require('./1-quantization.js')
+const { vectorization } = require('./2-vectorization.js')
+const { rearrange } = require('./3-rearranging.js')
+
+
+
+
+
+module.exports.process = async (url) => {
+  const basename = path.basename(url);
   const imageData = await getImageData(url);
-  if (debug) debug.append(canvasFromImageData(imageData));
 
   // 1: reduce colors of image
   const imageDataReduced = await quantization(imageData);
-  // if (debug) debug.append(canvasFromImageData(imageDataReduced));
+  console.log('finished quantization', url);
 
   // 2: vectorize image
   const vectorized = await vectorization(imageDataReduced);
-  // if (debug) debug.append(nodeFromSvg(vectorized));
+  fs.writeFileSync(`./debug/${basename}-vectorized.svg`, vectorized)
+  console.log('finished vectorization', url);
 
   // 3: rearrange the vectorized data
-  const rearranged = await rearrange(vectorized, debug);
-  return rearranged;
+  const rearranged = await rearrange(vectorized);
+  console.log('finished rearranging', url);
+
+  fs.writeFileSync(`./debug/${basename}-rearranged.svg`, rearranged)
 }
 
 
 
 // Helper Functions
 const getImageData = async (url, maxSize = 1000) => {
-  let img = new Image();
-  img.src = await getBase64(url);
-  await img.decode();
+  let img = await loadImage(url);
   let w = img.width;
   let h = img.height;
   if (w > maxSize) {
     h = h * (maxSize / w);
     w = maxSize;
   }
-  let canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
+  let canvas = createCanvas(w, h);
   let context = canvas.getContext('2d');
   context.drawImage(img, 0, 0, w, h);
   return context.getImageData(0, 0, w, h);
 }
 
-// Helper Functions for Debug
-const canvasFromImageData = (imageData) => {
-  let canvas = document.createElement("canvas");
-  canvas.width = imageData.width;
-  canvas.height = imageData.height;
-  var ctx = canvas.getContext("2d");
-  ctx.putImageData(imageData, 0, 0);
-  return canvas;
-}
+// // Helper Functions for Debug
+// const canvasFromImageData = (imageData) => {
+//   let canvas = document.createElement("canvas");
+//   canvas.width = imageData.width;
+//   canvas.height = imageData.height;
+//   var ctx = canvas.getContext("2d");
+//   ctx.putImageData(imageData, 0, 0);
+//   return canvas;
+// }
 
-const getBase64 = async (url) => {
-  try {
-    let image = await axios.get(url, { responseType: 'arraybuffer' });
-    let raw = Buffer.from(image.data).toString('base64');
-    return "data:" + image.headers["content-type"] + ";base64," + raw;
-  } catch (error) {
-    console.log(error)
-  }
-}
-
-const nodeFromSvg = (svgData) => {
-  const node = document.createElement('span')
-  node.innerHTML = svgData;
-  return node;
-}

@@ -1,26 +1,27 @@
-import { SVG } from '@svgdotjs/svg.js';
-import tinycolor from 'tinycolor2';
-import '@svgdotjs/svg.filter.js'
-// import areaPolygon from 'area-polygon';
+const { createSVGWindow } = require('svgdom')
+const window = createSVGWindow()
+const document = window.document
+const { SVG, registerWindow } = require('@svgdotjs/svg.js')
+const jsdom = require("jsdom");
+const { JSDOM } = jsdom;
+// const dom = new JSDOM(`<!DOCTYPE html>`);
 
-/*
+const tinycolor = require('tinycolor2');
 
-TODO:
-* Make all attrs like area relative
+// register window and document
+// registerWindow(dom.window, dom.window.document)
+registerWindow(window, document)
 
-*/
-
-export const rearrange = async (svg, debug) => {
+module.exports.rearrange = async (svg) => {
   return new Promise((resolve) => {
     let aspectRatio = 3 / 2;
-    let draw = SVG(svg);
-    if(debug) draw.addTo(debug);
+    let draw = SVG(svg).addTo(document.documentElement);
+    //draw.attr('xmlns', 'http://www.w3.org/2000/svg')
 
     // change aspect ratio of image
     let h = draw.height();
     let w = h * aspectRatio;
     draw.size(w, h);
-    //draw.viewbox(0, 0, w, h)
 
     let zoomAmount = 0.1;
     draw.viewbox(
@@ -28,18 +29,19 @@ export const rearrange = async (svg, debug) => {
       zoomAmount * h,
       w - zoomAmount * w * 2,
       h - zoomAmount * h * 2)
-    // console.log("drawing rearranged", draw.width(), draw.height())
-    // console.log(" viewbox", draw.viewbox())
+      // console.log("drawing rearranged", draw.width(), draw.height())
+      // console.log(" viewbox", draw.viewbox())
 
-    let mainGroup = draw.first();
-    mainGroup.attr('fill-opacity', 1)
-    mainGroup.attr('stroke-opacity', 1)
+      let mainGroup = draw.first();
+      mainGroup.attr('fill-opacity', 1)
+      mainGroup.attr('stroke-opacity', 1)
 
-    // sort all paths from biggest to smallest
-    let allPaths = draw.find('path');
-    allPaths.sort((a, b) => {
-      return area(b) - area(a);
-    })
+      // sort all paths from biggest to smallest
+      let allPaths = draw.find('path');
+      allPaths.sort((a, b) => {
+        return area(b) - area(a);
+      })
+
 
     allPaths.forEach((el, idx) => {
       // check size and delete if too small
@@ -106,6 +108,8 @@ const random = (min=0, max=1) => {
 const area = el => {
   if (el === undefined ) return 0;
   // if (el.constructor.name === 'Path') return areaPolygon(el.array());
+  //console.log(el)
+  // return el.node.length;
   return el.width() * el.height();
 
   //return areaPolygon(e.array());

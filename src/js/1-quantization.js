@@ -1,6 +1,10 @@
-import RgbQuant from 'rgbquant';
+const path = require('path');
 
-export const quantization = async (image) => {
+const RgbQuant = require('rgbquant');
+
+const { ImageData } = require('canvas');
+
+module.exports.quantization = async (image) => {
 
   // options with defaults (not required)
   var opts = {
@@ -21,9 +25,9 @@ export const quantization = async (image) => {
   };
 
   let q = new RgbQuant(opts);
-  q.sample(image);
+  q.sample(image.data, image.width);
   //let pal = q.palette();
-  let reducedArray = q.reduce(image);
+  let reducedArray = q.reduce(image.data);
   let imageData = new ImageData(
     new Uint8ClampedArray(reducedArray.buffer),
     image.width,

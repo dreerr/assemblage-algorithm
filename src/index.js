@@ -1,20 +1,17 @@
-import '@/styles/index.scss'
-import { process } from '@/js/main-processor'
+var glob = require("glob")
+const fs = require('fs');
+const { rearrange } = require('./js/3-rearranging.js')
 
-const app = document.querySelector('#root');
+var { process } = require('./js/main-processor.js');
 
-
-// for (let index = 0; index < 50; index++) {
-//   let path = `/assets/example${index}.png`
-//   processUrl(path)
-// }
-
-
-const processUrl = url => {
-  let div = document.createElement('div')
-  div.className = 'debug'
-  app.append(div)
-  process(url, div)
+const main = async () => {
+  let items = glob.sync('./public/*.png');
+  for (let index = 18; index < items.length; index++) {
+    const element = items[index];
+    await process(element);
+  }
 }
 
-processUrl('https://lh3.googleusercontent.com/YNu5EBZXJQKIaynTrm6M1QeJwJaGkmLVYZ-4DmfGcySEuV-SHM9B0xqdDR5ij6D9yiPUgdH7rGSTfTGjgURoaMHLSr5AG9-MIVCk3g')
+main()
+
+// process('https://www.placecage.com/1000/1000')

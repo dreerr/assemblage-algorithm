@@ -1,6 +1,14 @@
-import potrace from 'esm-potrace-wasm';
+const os = require('os');
+const fs = require('fs');
+const canvas = require('canvas');
+const canvasToBuffer = require('canvas-to-buffer');
+const {loadFromCanvas} = require('potrace-wasm')
 
-export const vectorization = async (imageData) => {
+
+
+const { createCanvas, ImageData } = canvas;
+
+module.exports.vectorization = async (imageData) => {
   const params = {
     turdsize: 2,
     turnpolicy: 4,
@@ -8,13 +16,30 @@ export const vectorization = async (imageData) => {
     opticurve: 1,
     opttolerance: 0.2,
     pathonly: false,
-    strokeWidth: 10,
+    strokeWidth: 0,
     minPathSegments: 10
   };
-  let svg = await convertToColorSVG(imageData, params, window);
+  let svg = await convertToColorSVG(imageData, params);
   svg = svg.replace(/<[\?!].+?>/, '');
   return svg;
 }
+
+// const getBufferFromImageData = (imageData) => {
+//   let canvas = createCanvas(imageData.width, imageData.height);
+//   let context = canvas.getContext('2d');
+//   context.putImageData(imageData, 0, 0);
+//   let frame = new canvasToBuffer(canvas);
+//   return frame.toBuffer();
+// }
+
+
+const getCanvasFromImageData = (imageData) => {
+  let canvas = createCanvas(imageData.width, imageData.height);
+  let context = canvas.getContext('2d');
+  context.putImageData(imageData, 0, 0);
+  return canvas;
+}
+
 
 
 const extractColors = (imageData) => {
@@ -37,7 +62,7 @@ const extractColors = (imageData) => {
   return colors;
 };
 
-const convertToColorSVG = async (imageData, params, progressPort) => {
+const convertToColorSVG = async (imageData, params) => {
   const colors = extractColors(imageData);
 
   let prefix = '';
@@ -59,7 +84,11 @@ const convertToColorSVG = async (imageData, params, progressPort) => {
         newImageData.data[location + 3] = 255;
       }
       return new Promise(async (resolve) => {
-        let svg = await potrace(newImageData, params);
+        //var buffer = getBufferFromImageData(newImageData);
+        // let svg = await Potrace(buffer, params).trace();
+        // let svg = await Potrace.trace(newImageData, null,params);
+        // let svg = await potrace(newImageData, params);
+        let svg = await loadFromCanvas(getCanvasFromImageData(newImageData), params)
         newImageData = null;
         const [r, g, b, a] = color.split(',');
         const alpha = (a / 255).toFixed(2);
@@ -87,7 +116,7 @@ const convertToColorSVG = async (imageData, params, progressPort) => {
           if (total === processed) {
             console.log(`Potraced 100% %c■■`, `color: rgba(${color})`);
           }
-          progressPort.postMessage({ processed, total });
+          // progressPort.postMessage({ processed, total });
           resolve('');
           return;
         }
@@ -95,7 +124,7 @@ const convertToColorSVG = async (imageData, params, progressPort) => {
           `Potraced ${String(((processed / total) * 100).toFixed())}% %c■■`,
           `color: rgba(${color})`,
         );
-        progressPort.postMessage({ processed, total, svg });
+        // progressPort.postMessage({ processed, total, svg });
         resolve(svg);
       });
     });
@@ -122,6 +151,7 @@ const convertToColorSVG = async (imageData, params, progressPort) => {
     svgString += svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, '$2');
   }
   svgString += suffix;
+  svgString = svgString.replace(/.*?<!DOCTYPE[^>]+>/, '')
   return svgString;
 };
 
