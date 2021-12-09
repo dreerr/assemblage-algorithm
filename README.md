@@ -1,8 +1,9 @@
-# reassemblage Playground
+# Assemblage Drawing API
 
 ## TODOs:
 
-* ☑️ Image Resizing und Image Data Workflow
+* Convert to Express App
+
 * Save as Image again
 * Color quantization
     * not ideal color distribution yet

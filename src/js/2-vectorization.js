@@ -24,15 +24,6 @@ module.exports.vectorization = async (imageData) => {
   return svg;
 }
 
-// const getBufferFromImageData = (imageData) => {
-//   let canvas = createCanvas(imageData.width, imageData.height);
-//   let context = canvas.getContext('2d');
-//   context.putImageData(imageData, 0, 0);
-//   let frame = new canvasToBuffer(canvas);
-//   return frame.toBuffer();
-// }
-
-
 const getCanvasFromImageData = (imageData) => {
   let canvas = createCanvas(imageData.width, imageData.height);
   let context = canvas.getContext('2d');
@@ -120,10 +111,10 @@ const convertToColorSVG = async (imageData, params) => {
           resolve('');
           return;
         }
-        console.log(
-          `Potraced ${String(((processed / total) * 100).toFixed())}% %c■■`,
-          `color: rgba(${color})`,
-        );
+        // console.log(
+        //   `Potraced ${String(((processed / total) * 100).toFixed())}% %c■■`,
+        //   `color: rgba(${color})`,
+        // );
         // progressPort.postMessage({ processed, total, svg });
         resolve(svg);
       });

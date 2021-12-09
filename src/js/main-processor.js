@@ -12,23 +12,30 @@ const { rearrange } = require('./3-rearranging.js')
 
 
 module.exports.process = async (url) => {
+  console.log('processing', url);
+  console.time("total");
   const basename = path.basename(url);
   const imageData = await getImageData(url);
 
   // 1: reduce colors of image
+  console.time("quantization");
   const imageDataReduced = await quantization(imageData);
-  console.log('finished quantization', url);
+  console.timeEnd("quantization");
 
   // 2: vectorize image
+  console.time("vectorization");
   const vectorized = await vectorization(imageDataReduced);
   fs.writeFileSync(`./debug/${basename}-vectorized.svg`, vectorized)
-  console.log('finished vectorization', url);
+  console.timeEnd("vectorization");
 
   // 3: rearrange the vectorized data
+  console.time("rearranging");
   const rearranged = await rearrange(vectorized);
-  console.log('finished rearranging', url);
+  console.timeEnd("rearranging");
 
   fs.writeFileSync(`./debug/${basename}-rearranged.svg`, rearranged)
+  console.timeEnd("total");
+  console.log('-----')
 }
 
 
