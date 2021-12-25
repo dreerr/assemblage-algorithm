@@ -1,10 +1,11 @@
 {
-  "name": "reassemblage-node",
+  "name": "assemblage-node",
   "version": "0.0.1",
   "description": "",
   "main": "index.js",
   "author": "",
   "license": "",
+  "type": "module",
   "scripts": {
     "lint": "eslint . src config || true",
     "prettify": "prettier --write 'src/**/*.js'"
@@ -27,9 +28,11 @@
     "svgdom": "^0.1.10"
   },
   "dependencies": {
+    "@svgdotjs/svg.filter.js": "^3.0.8",
     "canvas-to-buffer": "^1.1.1",
     "glob": "^7.2.0",
     "oslllo-potrace": "^1.1.4",
-    "potrace-wasm": "^1.0.4"
+    "potrace-wasm": "^1.0.4",
+    "seedrandom": "^3.0.5"
   }
 }
