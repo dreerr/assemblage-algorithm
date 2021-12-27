@@ -1,33 +1,19 @@
-import axios from 'axios'
-import { Buffer } from 'buffer'
 import { quantization } from './quantization.js'
-import { vectorization } from './vectorization.js'
+import { vectorization, canvasFromImageData } from './vectorization.js'
 import { rearrange } from './rearranging.js'
-import pkg from 'canvas';
-const { loadImage, createCanvas } = pkg;
+import pkg from 'canvas'
+import fs from 'fs'
+import path from 'path'
+const { loadImage, createCanvas } = pkg
 
-// TODO Fail!
-const getBase64 = async (url) => {
-  try {
-    const image = await axios.get(url, { responseType: 'arraybuffer' })
-    const raw = Buffer.from(image.data).toString('base64')
-    return 'data:' + image.headers['content-type'] + ';base64,' + raw
-  } catch (error) {
-    console.log(error)
-    return null
-  }
-}
+const maxSize = 1000
 
 export const processUrl = async (url, opts = {}) => {
-  let img = await loadImage(url);
+  const basenameNoExt = path.basename(url).replace(/\.[^/.]+$/, '')
+  console.time(basenameNoExt)
 
-  const object = await processImg(img, opts)
-  return object
-}
-
-const processImg = async (img, opts = {}) => {
-  // TODO: honor metadata field 'background_color'
-  const maxSize = 1000
+  // LOAD AND SCALE IMAGE
+  const img = await loadImage(url)
   let w = img.width
   let h = img.height
   if (w > maxSize && w >= h) {
@@ -37,53 +23,37 @@ const processImg = async (img, opts = {}) => {
     w *= maxSize / h
     h = maxSize
   }
-  console.log('image is now', w, h)
-  const canvas = createCanvas(w, h);
+  const canvas = createCanvas(w, h)
   const context = canvas.getContext('2d')
-  context.imageSmoothingEnabled = false;
+  context.imageSmoothingEnabled = false
   context.drawImage(img, 0, 0, w, h)
   const imageData = context.getImageData(0, 0, w, h)
-  if (opts.debug) opts.debug.append(canvas)
 
-  const object = await processImageData(imageData, opts)
-  return object
-}
-
-export const processImageData = async (imageData, opts = {}) => {
-  const id = Math.floor(Math.random() * 1000)
-  console.time(id)
   // 1: reduce colors of image
   const imageDataReduced = await quantization(imageData)
-  if (opts.debug) opts.debug.append(canvasFromImageData(imageDataReduced))
 
   // 2: vectorize image
   const svgVectorized = await vectorization(imageDataReduced)
-  if (opts.debug) opts.debug.append(nodeFromSvg(svgVectorized))
 
   // 3: rearrange the vectorized data
-  const svgRearranged = await rearrange(svgVectorized, opts)
-  if (opts.debug) opts.debug.append(nodeFromSvg(svgRearranged))
-  console.timeEnd(id)
+  const svgRearranged = await rearrange(svgVectorized)
+
+  console.timeEnd(basenameNoExt)
+  if (opts.debug) {
+    const reduced = fs.createWriteStream(path.join(opts.debug, basenameNoExt + '_reduced.png'))
+    const stream = canvasFromImageData(imageDataReduced).createPNGStream()
+    stream.pipe(reduced)
+    fs.writeFile(
+      path.join(opts.debug, basenameNoExt + '_vectrorized.svg'),
+      svgVectorized.svg, () => { })
+    fs.writeFile(
+      path.join(opts.debug, basenameNoExt + '_rearranged.svg'),
+      svgRearranged, () => { })
+  }
   return {
     resized: imageData,
     reduced: imageDataReduced,
     vectorized: svgVectorized,
     rearranged: svgRearranged
   }
-}
-
-// Helper Functions for Debug
-const canvasFromImageData = (imageData) => {
-  const canvas = document.createElement('canvas')
-  canvas.width = imageData.width
-  canvas.height = imageData.height
-  const ctx = canvas.getContext('2d')
-  ctx.putImageData(imageData, 0, 0)
-  return canvas
-}
-
-const nodeFromSvg = (svg) => {
-  const span = document.createElement('span')
-  span.innerHTML = svg
-  return span
 }

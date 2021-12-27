@@ -1,15 +1,20 @@
 import glob from 'glob'
-import { processUrl } from './assemblage/assemblage.js';
+import { processUrl } from './assemblage/assemblage.js'
+import path from 'path'
+import fs from 'fs'
 
 const main = async () => {
-  console.time("all elems");
-  let items = glob.sync('../../Beispielbilder/*', {nosort: false});
-
-  items = items.sort()
+  console.time('total')
+  // const items = glob.sync('../../Beispielbilder/*')
+  // items.sort()
+  const items = ['https://media.artblocks.io/13000757.png']
   for (const item of items) {
-    console.log(item);
-    await processUrl(item)
+    const assemblage = await processUrl(item)
+    const exportPath = `./export/${path.basename(item)}.svg`
+    fs.writeFileSync(exportPath, assemblage.rearranged)
   }
+  console.log('num items', items.length)
+  console.timeEnd('total')
 }
 
 main()

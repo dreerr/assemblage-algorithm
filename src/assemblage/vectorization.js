@@ -1,10 +1,6 @@
-import os from 'os';
-import fs from 'fs';
-// import { createCanvas, createImageData } from 'canvas';
-import pkg from 'canvas';
-const { createCanvas, createImageData } = pkg;
-import canvasToBuffer from 'canvas-to-buffer';
-import { loadFromCanvas } from 'potrace-wasm';
+import pkg from 'canvas'
+import { loadFromCanvas } from 'potrace-wasm'
+const { createCanvas, createImageData } = pkg
 
 export const vectorization = async (imageData) => {
   const params = {
@@ -15,18 +11,17 @@ export const vectorization = async (imageData) => {
     opttolerance: 0.2,
     pathonly: false,
     strokeWidth: 10,
-    minPathSegments: 10,
+    minPathSegments: 10
   }
-  let obj = await convertToColorSVG(imageData, params)
-  obj.svg = obj.svg.replace(/<[\?!].+?>/, '')
+  const obj = await convertToColorSVG(imageData, params)
   return obj
 }
 
-const getCanvasFromImageData = (imageData) => {
-  let canvas = createCanvas(imageData.width, imageData.height);
-  let context = canvas.getContext('2d');
-  context.putImageData(imageData, 0, 0);
-  return canvas;
+export const canvasFromImageData = (imageData) => {
+  const canvas = createCanvas(imageData.width, imageData.height)
+  const context = canvas.getContext('2d')
+  context.putImageData(imageData, 0, 0)
+  return canvas
 }
 
 const extractColors = (imageData) => {
@@ -58,7 +53,7 @@ const convertToColorSVG = async (imageData, params) => {
 
   const promises = []
   let processed = 0
-  let colorDominances = {}
+  const colorDominances = {}
   for (const [color, occurrences] of Object.entries(colors)) {
     promises.push(() => {
       let newImageData = createImageData(imageData.width, imageData.height)
@@ -71,9 +66,10 @@ const convertToColorSVG = async (imageData, params) => {
         newImageData.data[location + 2] = 0
         newImageData.data[location + 3] = 255
       }
+      // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
         colorDominances[color] = len / imageData.data.length
-        let svg = await loadFromCanvas(getCanvasFromImageData(newImageData), params)
+        let svg = await loadFromCanvas(canvasFromImageData(newImageData), params)
         newImageData = null
         const [r, g, b, a] = color.split(',')
         const alpha = (a / 255).toFixed(2)
@@ -98,7 +94,7 @@ const convertToColorSVG = async (imageData, params) => {
         processed++
         if (!/<path/.test(svg)) {
           if (total === processed) {
-            console.log(`Potraced 100% %c■■`, `color: rgba(${color})`, len / imageData.data.length)
+            console.log('Potraced 100% %c■■', `color: rgba(${color})`, len / imageData.data.length)
           }
           resolve('')
           return

@@ -1,5 +1,5 @@
 import { SVG, registerWindow } from '@svgdotjs/svg.js'
-import { createSVGWindow } from 'svgdom';
+import { createSVGWindow } from 'svgdom'
 import '@svgdotjs/svg.filter.js'
 import SeedRandom from 'seedrandom'
 
@@ -8,15 +8,14 @@ const window = createSVGWindow()
 const document = window.document
 registerWindow(window, document)
 
-
-export const rearrange = async (obj, opts) =>
+export const rearrange = async (obj) =>
   new Promise((resolve) => {
     // INITALIZE RANDOMNESS
     const rs = new SeedRandom(obj.svg)
     const random = (min = 0, max = 1) => rs() * (max - min) + min
 
     // DRAW SVG
-    const draw = SVG(obj.svg).addTo(document.documentElement);
+    const draw = SVG(obj.svg).addTo(document.documentElement)
     draw.attr('xmlns', 'http://www.w3.org/2000/svg')
 
     // CHANGE ASPECT RATIO OF IMAGE
@@ -31,37 +30,35 @@ export const rearrange = async (obj, opts) =>
 
     // DEFINE AREA FUNCTIONS
     const area = (el) => {
-      if (!el) return 0;
+      if (!el) return 0
       return (el.width() * el.height()) / (h * w)
-      if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
-      return el.area
+      // if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
+      // return el.area
     }
     const isTooSmall = (el) => {
       return area(el) < 0.025
     }
 
     // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
-    let maxItems = Math.floor(80 / draw.children().length)
-    console.log("maxItems", maxItems)
+    const maxItems = Math.floor(80 / draw.children().length)
+    console.log('maxItems', maxItems)
     draw.children().forEach(group => {
-      let elems = draw.group()
-      let i = 0;
+      const elems = draw.group()
       // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
       for (let i = 0; i < 100; i++) {
-        let randomIdx = Math.floor(random(0, group.children().length - 1))
-        let el = group.get(i == 0 ? 0 : randomIdx)
+        const randomIdx = Math.floor(random(0, group.children().length - 1))
+        const el = group.get(i === 0 ? 0 : randomIdx)
         if (!isTooSmall(el)) {
-          elems.add(el);
-          if (elems.children().length >= maxItems) break;
-          if (group.children().length == 0) break;
+          elems.add(el)
+          if (elems.children().length >= maxItems) break
+          if (group.children().length === 0) break
         }
       }
       // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
-      if (elems.children().length == 0 && draw.children().length <= 3)
-        elems.add(group.get(0))
+      if (elems.children().length === 0 && draw.children().length <= 3) { elems.add(group.get(0)) }
       group.clear()
       elems.children().forEach(el => group.add(el))
-    });
+    })
 
     // GET MAIN GROUP AND SET FULL OPACITY
     const mainGroup = draw.first()
@@ -73,7 +70,6 @@ export const rearrange = async (obj, opts) =>
 
     // ITERATE OVER ALL PATHS
     allPaths.forEach((el) => {
-
       // APPLY ATTRIBUTES FROM PARENT TO PATH
       const attrs = el.parent().attr(['fill'])
       el.attr(attrs)
@@ -83,11 +79,11 @@ export const rearrange = async (obj, opts) =>
       // GET RANDOM POINT INSIDE CIRCLE AND POSITION
       // let r = h/2.3 * Math.sqrt(random())
       // let r = h/2.3 * random()
-      let r = h / 2.3 * Math.pow(random(), 0.67)
-      let theta = random() * 2 * Math.PI
-      let x = w / 2 + r * aspectRatio * Math.cos(theta)
-      let y = h / 2 + r * Math.sin(theta)
-      el.center(x * 10, y * 10);
+      const r = h / 2.3 * Math.pow(random(), 0.67)
+      const theta = random() * 2 * Math.PI
+      const x = w / 2 + r * aspectRatio * Math.cos(theta)
+      const y = h / 2 + r * Math.sin(theta)
+      el.center(x * 10, y * 10)
 
       // SHUFFLE SIZE AND ROTATION
       let randomScale
@@ -97,12 +93,12 @@ export const rearrange = async (obj, opts) =>
       else randomScale = random(1, 5)
       el.transform({
         scale: randomScale,
-        rotate: random(0, 360),
+        rotate: random(0, 360)
       })
       el.area *= randomScale
 
       // APPLY DROP SHADOW / TODO: NATIVE?
-     el.css('filter', 'drop-shadow(0 0 220px rgba(0, 0, 0, 0.25)')
+      el.css('filter', 'drop-shadow(0 0 220px rgba(0, 0, 0, 0.25)')
       // group.css('filter', 'url("#svgBlur")')
       // el.filterWith(function (add) {
       //   // var blur = add.in(add.$sourceAlpha).flood('black', 0.1).gaussianBlur(5)
@@ -125,9 +121,9 @@ export const rearrange = async (obj, opts) =>
     </filter >`)
 
     // SET BACKGROUND
-    let arr = Object.values(obj.colors)
-    let i = arr.indexOf(Math.max(...arr));
-    let dominantColor = `rgba(${Object.keys(obj.colors)[i]})`
+    const arr = Object.values(obj.colors)
+    const i = arr.indexOf(Math.max(...arr))
+    const dominantColor = `rgba(${Object.keys(obj.colors)[i]})`
     const rect = SVG().rect(w, h).fill(dominantColor)
     rect.insertBefore(mainGroup)
 

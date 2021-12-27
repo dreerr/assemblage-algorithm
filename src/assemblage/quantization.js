@@ -1,7 +1,7 @@
 import RgbQuant from 'rgbquant'
 
-import pkg from 'canvas';
-const { createImageData } = pkg;
+import pkg from 'canvas'
+const { createImageData } = pkg
 
 export const quantization = async (image) => {
   // options with defaults (not required)
@@ -19,13 +19,13 @@ export const quantization = async (image) => {
     reIndex: false, // affects predefined palettes only. if true, allows compacting of sparsed palette once target palette size is reached. also enables palette sorting.
     useCache: true, // enables caching for perf usually, but can reduce perf in some cases, like pre-def palettes
     cacheFreq: 10, // min color occurance count needed to qualify for caching
-    colorDist: 'euclidean', // method used to determine color distance, can also be "manhattan"
+    colorDist: 'euclidean' // method used to determine color distance, can also be "manhattan"
   }
 
   const q = new RgbQuant(opts)
-  q.sample(image.data, image.width);
+  q.sample(image.data, image.width)
   // let pal = q.palette();
-  const reducedArray = q.reduce(image.data);
+  const reducedArray = q.reduce(image.data)
   const imageData = createImageData(
     new Uint8ClampedArray(reducedArray.buffer),
     image.width,
