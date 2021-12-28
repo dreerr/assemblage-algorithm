@@ -1,8 +1,16 @@
 import pkg from 'canvas'
-import { loadFromCanvas } from 'potrace-wasm'
 const { createCanvas, createImageData } = pkg
 
+import { loadFromCanvas } from 'potrace-wasm'
+// import { potrace, init } from 'esm-potrace-wasm';
+
+// let didInit = false
+
 export const vectorization = async (imageData) => {
+  // if (!didInit) {
+  //   await init()
+  //   didInit = true
+  // }
   const params = {
     turdsize: 2,
     turnpolicy: 4,
@@ -70,6 +78,7 @@ const convertToColorSVG = async (imageData, params) => {
       return new Promise(async (resolve) => {
         colorDominances[color] = len / imageData.data.length
         let svg = await loadFromCanvas(canvasFromImageData(newImageData), params)
+        // let svg = await potrace(newImageData, params)
         newImageData = null
         const [r, g, b, a] = color.split(',')
         const alpha = (a / 255).toFixed(2)
@@ -93,16 +102,16 @@ const convertToColorSVG = async (imageData, params) => {
         })
         processed++
         if (!/<path/.test(svg)) {
-          if (total === processed) {
-            console.log('Potraced 100% %c■■', `color: rgba(${color})`, len / imageData.data.length)
-          }
+          // if (total === processed) {
+          //   console.log('Potraced 100% %c■■', `color: rgba(${color})`, len / imageData.data.length)
+          // }
           resolve('')
           return
         }
-        console.log(
-          `Potraced ${String(((processed / total) * 100).toFixed())}% %c■■`,
-          `color: rgba(${color})`, len / imageData.data.length
-        )
+        // console.log(
+        //   `Potraced ${String(((processed / total) * 100).toFixed())}% %c■■`,
+        //   `color: rgba(${color})`, len / imageData.data.length
+        // )
         resolve(svg)
       })
     })

@@ -1,7 +1,8 @@
 import { SVG, registerWindow } from '@svgdotjs/svg.js'
 import { createSVGWindow } from 'svgdom'
 import '@svgdotjs/svg.filter.js'
-import SeedRandom from 'seedrandom'
+import pkg from 'seedrandom';
+const { alea } = pkg;
 
 // register window and document
 const window = createSVGWindow()
@@ -11,7 +12,7 @@ registerWindow(window, document)
 export const rearrange = async (obj) =>
   new Promise((resolve) => {
     // INITALIZE RANDOMNESS
-    const rs = new SeedRandom(obj.svg)
+    const rs = new alea(obj.svg)
     const random = (min = 0, max = 1) => rs() * (max - min) + min
 
     // DRAW SVG
@@ -41,7 +42,6 @@ export const rearrange = async (obj) =>
 
     // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
     const maxItems = Math.floor(80 / draw.children().length)
-    console.log('maxItems', maxItems)
     draw.children().forEach(group => {
       const elems = draw.group()
       // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL

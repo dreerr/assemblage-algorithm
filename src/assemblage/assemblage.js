@@ -1,18 +1,19 @@
 import { quantization } from './quantization.js'
 import { vectorization, canvasFromImageData } from './vectorization.js'
 import { rearrange } from './rearranging.js'
-import pkg from 'canvas'
+import canvas from 'canvas'
+const { loadImage, createCanvas } = canvas
 import fs from 'fs'
 import path from 'path'
-const { loadImage, createCanvas } = pkg
 
 const maxSize = 1000
 
 export const processUrl = async (url, opts = {}) => {
   const basenameNoExt = path.basename(url).replace(/\.[^/.]+$/, '')
-  console.time(basenameNoExt)
+  console.time(basenameNoExt + ' TOTAL')
 
   // LOAD AND SCALE IMAGE
+  console.time(basenameNoExt + ' Scaling')
   const img = await loadImage(url)
   let w = img.width
   let h = img.height
@@ -28,27 +29,37 @@ export const processUrl = async (url, opts = {}) => {
   context.imageSmoothingEnabled = false
   context.drawImage(img, 0, 0, w, h)
   const imageData = context.getImageData(0, 0, w, h)
+  console.timeEnd(basenameNoExt + ' Scaling')
 
   // 1: reduce colors of image
+
+  console.time(basenameNoExt + ' Reducing')
   const imageDataReduced = await quantization(imageData)
+  console.timeEnd(basenameNoExt + ' Reducing')
 
   // 2: vectorize image
+  console.time(basenameNoExt + ' Vectorizing')
   const svgVectorized = await vectorization(imageDataReduced)
+  console.timeEnd(basenameNoExt + ' Vectorizing')
 
   // 3: rearrange the vectorized data
+  console.time(basenameNoExt + ' Rearranging')
   const svgRearranged = await rearrange(svgVectorized)
+  console.timeEnd(basenameNoExt + ' Rearranging')
 
-  console.timeEnd(basenameNoExt)
+  console.timeEnd(basenameNoExt + ' TOTAL')
+  console.log('-------------------------');
+
   if (opts.debug) {
     const reduced = fs.createWriteStream(path.join(opts.debug, basenameNoExt + '_reduced.png'))
     const stream = canvasFromImageData(imageDataReduced).createPNGStream()
     stream.pipe(reduced)
-    fs.writeFile(
-      path.join(opts.debug, basenameNoExt + '_vectrorized.svg'),
-      svgVectorized.svg, () => { })
-    fs.writeFile(
+    fs.writeFileSync(
+      path.join(opts.debug, basenameNoExt + '_vectorized.svg'),
+      svgVectorized.svg)
+    fs.writeFileSync(
       path.join(opts.debug, basenameNoExt + '_rearranged.svg'),
-      svgRearranged, () => { })
+      svgRearranged)
   }
   return {
     resized: imageData,
