@@ -2,9 +2,9 @@ import { quantization } from './quantization.js'
 import { vectorization, canvasFromImageData } from './vectorization.js'
 import { rearrange } from './rearranging.js'
 import canvas from 'canvas'
-const { loadImage, createCanvas } = canvas
 import fs from 'fs'
 import path from 'path'
+const { loadImage, createCanvas } = canvas
 
 const maxSize = 1000
 
@@ -48,18 +48,14 @@ export const processUrl = async (url, opts = {}) => {
   console.timeEnd(basenameNoExt + ' Rearranging')
 
   console.timeEnd(basenameNoExt + ' TOTAL')
-  console.log('-------------------------');
+  console.log('-------------------------')
 
   if (opts.debug) {
     const reduced = fs.createWriteStream(path.join(opts.debug, basenameNoExt + '_reduced.png'))
     const stream = canvasFromImageData(imageDataReduced).createPNGStream()
     stream.pipe(reduced)
-    fs.writeFileSync(
-      path.join(opts.debug, basenameNoExt + '_vectorized.svg'),
-      svgVectorized.svg)
-    fs.writeFileSync(
-      path.join(opts.debug, basenameNoExt + '_rearranged.svg'),
-      svgRearranged)
+    fs.writeFileSync(path.join(opts.debug, basenameNoExt + '_vectorized.svg'), svgVectorized.svg)
+    fs.writeFileSync(path.join(opts.debug, basenameNoExt + '_rearranged.svg'), svgRearranged)
   }
   return {
     resized: imageData,

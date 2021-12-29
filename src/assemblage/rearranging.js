@@ -1,8 +1,8 @@
 import { SVG, registerWindow } from '@svgdotjs/svg.js'
 import { createSVGWindow } from 'svgdom'
 import '@svgdotjs/svg.filter.js'
-import pkg from 'seedrandom';
-const { alea } = pkg;
+import pkg from 'seedrandom'
+const { alea } = pkg
 
 // register window and document
 const window = createSVGWindow()
@@ -12,6 +12,7 @@ registerWindow(window, document)
 export const rearrange = async (obj) =>
   new Promise((resolve) => {
     // INITALIZE RANDOMNESS
+    // eslint-disable-next-line new-cap
     const rs = new alea(obj.svg)
     const random = (min = 0, max = 1) => rs() * (max - min) + min
 
@@ -42,7 +43,7 @@ export const rearrange = async (obj) =>
 
     // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
     const maxItems = Math.floor(80 / draw.children().length)
-    draw.children().forEach(group => {
+    draw.children().forEach((group) => {
       const elems = draw.group()
       // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
       for (let i = 0; i < 100; i++) {
@@ -55,9 +56,11 @@ export const rearrange = async (obj) =>
         }
       }
       // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
-      if (elems.children().length === 0 && draw.children().length <= 3) { elems.add(group.get(0)) }
+      if (elems.children().length === 0 && draw.children().length <= 3) {
+        elems.add(group.get(0))
+      }
       group.clear()
-      elems.children().forEach(el => group.add(el))
+      elems.children().forEach((el) => group.add(el))
     })
 
     // GET MAIN GROUP AND SET FULL OPACITY
@@ -79,7 +82,7 @@ export const rearrange = async (obj) =>
       // GET RANDOM POINT INSIDE CIRCLE AND POSITION
       // let r = h/2.3 * Math.sqrt(random())
       // let r = h/2.3 * random()
-      const r = h / 2.3 * Math.pow(random(), 0.67)
+      const r = (h / 2.3) * Math.pow(random(), 0.67)
       const theta = random() * 2 * Math.PI
       const x = w / 2 + r * aspectRatio * Math.cos(theta)
       const y = h / 2 + r * Math.sin(theta)
@@ -110,7 +113,7 @@ export const rearrange = async (obj) =>
     })
 
     allPaths.sort((a, b) => area(b) - area(a))
-    allPaths.forEach(el => el.addTo(mainGroup))
+    allPaths.forEach((el) => el.addTo(mainGroup))
 
     // SET FILTER
     draw.add(`<filter height="200%" width="200%" y="-50%" x="-50%" id="svgBlur">
@@ -123,7 +126,7 @@ export const rearrange = async (obj) =>
     // SET BACKGROUND
     const arr = Object.values(obj.colors)
     const i = arr.indexOf(Math.max(...arr))
-    const dominantColor = `rgba(${Object.keys(obj.colors)[i]})`
+    const dominantColor = `rgb(${Object.keys(obj.colors)[i].replace(/,\d+$/, '')})`
     const rect = SVG().rect(w, h).fill(dominantColor)
     rect.insertBefore(mainGroup)
 

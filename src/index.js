@@ -2,14 +2,14 @@ import glob from 'glob'
 import { processUrl } from './assemblage/assemblage.js'
 import path from 'path'
 import fs from 'fs'
-import PQueue from 'p-queue';
+import PQueue from 'p-queue'
 
-const queue = new PQueue({ concurrency: 8 });
+const queue = new PQueue({ concurrency: 8 })
 
-let count = 0;
+let count = 0
 queue.on('active', () => {
-  console.log(`Working on item #${++count}.  Size: ${queue.size}  Pending: ${queue.pending}`);
-});
+  console.log(`Working on item #${++count}.  Size: ${queue.size}  Pending: ${queue.pending}`)
+})
 
 const main = async () => {
   console.time('total')

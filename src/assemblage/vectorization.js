@@ -1,7 +1,7 @@
 import pkg from 'canvas'
-const { createCanvas, createImageData } = pkg
 
 import { loadFromCanvas } from 'potrace-wasm'
+const { createCanvas, createImageData } = pkg
 // import { potrace, init } from 'esm-potrace-wasm';
 
 // let didInit = false
@@ -60,6 +60,7 @@ const convertToColorSVG = async (imageData, params) => {
   let svgString = ''
 
   const promises = []
+  // eslint-disable-next-line no-unused-vars
   let processed = 0
   const colorDominances = {}
   for (const [color, occurrences] of Object.entries(colors)) {
@@ -117,7 +118,7 @@ const convertToColorSVG = async (imageData, params) => {
     })
   }
 
-  const total = promises.length
+  // const total = promises.length
   const promiseChunks = []
   // @ToDo: What is the problem?
   const chunkSize = 1 // 2 * navigator.hardwareConcurrency || 16;
