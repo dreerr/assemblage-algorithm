@@ -11,7 +11,6 @@
     "prettify": "prettier --write 'src/**/*.js'"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.17",
     "@svgdotjs/svg.filter.js": "^3.0.8",
     "@svgdotjs/svg.js": "^3.1.1",
     "canvas": "file:../node-canvas",
@@ -30,6 +29,7 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
+    "natsort": "^2.0.3",
     "prettier": "^2.5.1"
   }
 }
