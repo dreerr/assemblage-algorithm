@@ -1,6 +1,6 @@
 import { processUrl } from './assemblage/assemblage.js'
-import path from 'path';
-import fs from 'fs';
+import path from 'path'
+import fs from 'fs'
 
 const url = process.argv[2]
 const hash = process.argv[3]

@@ -36,7 +36,7 @@ export const rearrange = async (obj) =>
 
     // DEFINE AREA FUNCTIONS
     const area = (el) => {
-      if (!el) return 0;
+      if (!el) return 0
       // return (el.width() * el.height()) / (h * w)
       if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
       return el.area
@@ -45,7 +45,6 @@ export const rearrange = async (obj) =>
 
     // DEFINE ALTER ELEMENT
     const alterElement = (el) => {
-
       // APPLY ATTRIBUTES FROM PARENT TO PATH
       const fill = el.parent().attr('fill')
       el.attr('fill', fill)
@@ -61,7 +60,7 @@ export const rearrange = async (obj) =>
       const theta = random() * 2 * Math.PI
       const x = w / 2 + r * aspectRatio * Math.cos(theta)
       const y = h / 2 + r * Math.sin(theta)
-      el.center(x * 10, y * 10);
+      el.center(x * 10, y * 10)
 
       // SHUFFLE SIZE AND ROTATION
       let randomScale
@@ -76,7 +75,7 @@ export const rearrange = async (obj) =>
         translate: { x: 0, y: w * 1.7666666 }
       }).transform({
         scale: randomScale,
-        rotate: random(0, 360),
+        rotate: random(0, 360)
       }, true)
       el.area *= randomScale
     }
@@ -94,8 +93,8 @@ export const rearrange = async (obj) =>
         if (!isTooSmall(el)) {
           alterElement(el)
           numElems += 1
-          if (numElems >= maxItems) break;
-          if (colorGroup.children().length === 0) break;
+          if (numElems >= maxItems) break
+          if (colorGroup.children().length === 0) break
         }
       }
       // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
@@ -105,14 +104,14 @@ export const rearrange = async (obj) =>
         numElems += 1
       }
       colorGroup.remove()
-    });
+    })
 
     allShapes.sort((a, b) => area(b) - area(a))
     allShapes.forEach(el => el.parent().addTo(draw))
 
     // SET BACKGROUND
     const colorsArray = Object.values(obj.colors)
-    const i = colorsArray.indexOf(Math.max(...colorsArray));
+    const i = colorsArray.indexOf(Math.max(...colorsArray))
     const dominantColor = `rgb(${Object.keys(obj.colors)[i].replace(/,\d+$/, '')})`
     const rect = SVG().rect(w, h).fill(dominantColor)
     rect.insertBefore(draw.first())
@@ -136,5 +135,3 @@ export const rearrange = async (obj) =>
 
     resolve(draw.svg())
   })
-
-

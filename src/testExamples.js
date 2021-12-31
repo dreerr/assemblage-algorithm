@@ -1,8 +1,8 @@
 import glob from 'glob'
 import natsort from 'natsort'
 import { addToQueue } from './queue.js'
-import path from 'path';
-import { writeFileSync } from 'fs';
+import path from 'path'
+import { writeFileSync } from 'fs'
 
 const items = glob.sync('../../Beispielbilder/*')
 items.sort(natsort.default())
