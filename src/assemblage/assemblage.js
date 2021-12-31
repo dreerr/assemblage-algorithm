@@ -32,7 +32,6 @@ export const processUrl = async (url, opts = {}) => {
   console.timeEnd(basenameNoExt + ' Scaling')
 
   // 1: reduce colors of image
-
   console.time(basenameNoExt + ' Reducing')
   const imageDataReduced = await quantization(imageData)
   console.timeEnd(basenameNoExt + ' Reducing')

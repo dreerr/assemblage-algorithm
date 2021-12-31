@@ -30,63 +30,38 @@ export const rearrange = async (obj) =>
     const zoomAmount = 0.0
     draw.viewbox(zoomAmount * w, zoomAmount * h, w - zoomAmount * w * 2, h - zoomAmount * h * 2)
 
+    // GET ALL GROUPS AND INIT SHAPES
+    const colorGroups = draw.children()
+    const allShapes = []
+
     // DEFINE AREA FUNCTIONS
     const area = (el) => {
-      if (!el) return 0
-      return (el.width() * el.height()) / (h * w)
-      // if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
-      // return el.area
+      if (!el) return 0;
+      // return (el.width() * el.height()) / (h * w)
+      if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
+      return el.area
     }
-    const isTooSmall = (el) => {
-      return area(el) < 0.025
-    }
+    const isTooSmall = (el) => area(el) < 0.025
 
-    // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
-    const maxItems = Math.floor(80 / draw.children().length)
-    draw.children().forEach((group) => {
-      const elems = draw.group()
-      // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
-      for (let i = 0; i < 100; i++) {
-        const randomIdx = Math.floor(random(0, group.children().length - 1))
-        const el = group.get(i === 0 ? 0 : randomIdx)
-        if (!isTooSmall(el)) {
-          elems.add(el)
-          if (elems.children().length >= maxItems) break
-          if (group.children().length === 0) break
-        }
-      }
-      // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
-      if (elems.children().length === 0 && draw.children().length <= 3) {
-        elems.add(group.get(0))
-      }
-      group.clear()
-      elems.children().forEach((el) => group.add(el))
-    })
+    // DEFINE ALTER ELEMENT
+    const alterElement = (el) => {
 
-    // GET MAIN GROUP AND SET FULL OPACITY
-    const mainGroup = draw.first()
-    mainGroup.attr('fill-opacity', 1)
-    mainGroup.attr('stroke-opacity', 0)
-
-    // SORT ALL PATHS FROM BIGGEST TO SMALLEST
-    const allPaths = draw.find('path')
-
-    // ITERATE OVER ALL PATHS
-    allPaths.forEach((el) => {
       // APPLY ATTRIBUTES FROM PARENT TO PATH
-      const attrs = el.parent().attr(['fill'])
-      el.attr(attrs)
-      // var group = mainGroup.group()
-      // el.addTo(group)
+      const fill = el.parent().attr('fill')
+      el.attr('fill', fill)
+
+      // EVERY ELEM GETS A GROUPT THAT SHADOW CAN BE APPLIED
+      const group = draw.group()
+      el.addTo(group)
+      group.addClass('s')
+      allShapes.push(el)
 
       // GET RANDOM POINT INSIDE CIRCLE AND POSITION
-      // let r = h/2.3 * Math.sqrt(random())
-      // let r = h/2.3 * random()
-      const r = (h / 2.3) * Math.pow(random(), 0.67)
+      const r = h / 2.3 * (random() ** 0.67)
       const theta = random() * 2 * Math.PI
       const x = w / 2 + r * aspectRatio * Math.cos(theta)
       const y = h / 2 + r * Math.sin(theta)
-      el.center(x * 10, y * 10)
+      el.center(x * 10, y * 10);
 
       // SHUFFLE SIZE AND ROTATION
       let randomScale
@@ -94,45 +69,72 @@ export const rearrange = async (obj) =>
       else if (area(el) < 0.1) randomScale = random(2, 6)
       else if (area(el) > 2) randomScale = random(0.5, 4)
       else randomScale = random(1, 5)
+
       el.transform({
+        scale: [0.1, -0.1],
+        origin: { x: 0, y: -w },
+        translate: { x: 0, y: w * 1.7666666 }
+      }).transform({
         scale: randomScale,
-        rotate: random(0, 360)
-      })
+        rotate: random(0, 360),
+      }, true)
       el.area *= randomScale
+    }
 
-      // APPLY DROP SHADOW / TODO: NATIVE?
-      el.css('filter', 'drop-shadow(0 0 220px rgba(0, 0, 0, 0.25)')
-      // group.css('filter', 'url("#svgBlur")')
-      // el.filterWith(function (add) {
-      //   // var blur = add.in(add.$sourceAlpha).flood('black', 0.1).gaussianBlur(5)
-      //   var blur = add.offset(20, 20).in(add.$sourceAlpha).gaussianBlur(5)
-      //   add.blend(add.$source, blur)
+    // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
+    const maxItems = Math.floor(80 / draw.children().length)
 
-      //   this.size('200%', '200%').move('-50%', '-50%')
-      // })
-    })
+    colorGroups.forEach(colorGroup => {
+      let numElems = 0
 
-    allPaths.sort((a, b) => area(b) - area(a))
-    allPaths.forEach((el) => el.addTo(mainGroup))
+      // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
+      for (let i = 0; i < 100; i += 1) {
+        const randomIdx = Math.floor(random(0, colorGroup.children().length - 1))
+        const el = colorGroup.get(i === 0 ? 0 : randomIdx)
+        if (!isTooSmall(el)) {
+          alterElement(el)
+          numElems += 1
+          if (numElems >= maxItems) break;
+          if (colorGroup.children().length === 0) break;
+        }
+      }
+      // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
+      if (numElems === 0 && colorGroups.length <= 5) {
+        const el = colorGroup.get(0)
+        alterElement(el)
+        numElems += 1
+      }
+      colorGroup.remove()
+    });
 
-    // SET FILTER
-    draw.add(`<filter height="200%" width="200%" y="-50%" x="-50%" id="svgBlur">
-      <feColorMatrix result="matrixOut" in="SourceGraphic" type="matrix"
-      values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0" />
-      <feGaussianBlur result="blurOut" in="offOut" stdDeviation="220" />
-      <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-    </filter >`)
+    allShapes.sort((a, b) => area(b) - area(a))
+    allShapes.forEach(el => el.parent().addTo(draw))
 
     // SET BACKGROUND
-    const arr = Object.values(obj.colors)
-    const i = arr.indexOf(Math.max(...arr))
+    const colorsArray = Object.values(obj.colors)
+    const i = colorsArray.indexOf(Math.max(...colorsArray));
     const dominantColor = `rgb(${Object.keys(obj.colors)[i].replace(/,\d+$/, '')})`
     const rect = SVG().rect(w, h).fill(dominantColor)
-    rect.insertBefore(mainGroup)
+    rect.insertBefore(draw.first())
+
+    // SET FILTER
+    rect.before(`<defs>
+        <style>
+          .s {
+            filter: url(#shadow);
+            overflow: visible !important;
+          }
+      </style>
+      <filter id="shadow" filterUnits="userSpaceOnUse">
+              <feDropShadow dx="0" dy="0" stdDeviation="180" flood-color="#000000" flood-opacity="0.27"/>
+          </filter>
+    </defs>`)
 
     // REMOVE THE BIGGEST ELEMS
-    if (allPaths.length > 5) allPaths[0].remove()
-    if (allPaths.length > 10) allPaths[1].remove()
+    if (allShapes.length > 5) allShapes[0].parent().hide()
+    if (allShapes.length > 10) allShapes[1].parent().hide()
 
     resolve(draw.svg())
   })
+
+
