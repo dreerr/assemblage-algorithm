@@ -16,12 +16,13 @@ export const addToQueue = (item) => {
       })
 
       child.on('close', msg => {
-        console.log('child closed', msg)
+        console.log('child closed', msg, item)
       })
 
       child.on('error', msg => {
-        console.log('Error in child', msg)
+        console.log('Error in child', msg, item)
       })
-    }
+    },
+    execArgv: ['--stack-size=8192']
   })
 }

@@ -77,7 +77,7 @@ export const rearrange = async (obj) =>
         scale: randomScale,
         rotate: random(0, 360)
       }, true)
-      el.area *= randomScale
+      // el.area *= randomScale
     }
 
     // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
@@ -97,8 +97,8 @@ export const rearrange = async (obj) =>
           if (colorGroup.children().length === 0) break
         }
       }
-      // BACKUP IF EVERY ITEM WAS TOO SMALL AND ADD THE FIRST
-      if (numElems === 0 && colorGroups.length <= 5) {
+      // BACKUP IF EVERY ITEM WAS TOO SMALL: ADD THE FIRST ITEM NO MATTER WHAT
+      if (numElems === 0 && draw.children().length <= 3) {
         const el = colorGroup.get(0)
         alterElement(el)
         numElems += 1
@@ -118,16 +118,16 @@ export const rearrange = async (obj) =>
 
     // SET FILTER
     rect.before(`<defs>
-        <style>
-          .s {
-            filter: url(#shadow);
-            overflow: visible !important;
-          }
+      <style>
+        .s {
+          filter: url(#shadow);
+          overflow: visible !important;
+        }
       </style>
       <filter id="shadow" filterUnits="userSpaceOnUse">
-              <feDropShadow dx="0" dy="0" stdDeviation="180" flood-color="#000000" flood-opacity="0.27"/>
-          </filter>
-    </defs>`)
+        <feDropShadow dx="0" dy="0" stdDeviation="180" flood-color="#000000" flood-opacity="0.27"/>
+        </filter>
+      </defs>`)
 
     // REMOVE THE BIGGEST ELEMS
     if (allShapes.length > 5) allShapes[0].parent().hide()

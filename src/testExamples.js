@@ -22,4 +22,4 @@ const html = `<!DOCTYPE html>
 ${snip}
 </body>
 </html>`
-writeFileSync('./export_cp/index.html', html)
+writeFileSync(`${process.env.EXPORT_PATH}index.html`, html)

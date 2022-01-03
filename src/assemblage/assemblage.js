@@ -4,7 +4,9 @@ import { rearrange } from './rearranging.js'
 import canvas from 'canvas'
 import fs from 'fs'
 import path from 'path'
+import dotenv from 'dotenv'
 const { loadImage, createCanvas } = canvas
+dotenv.config()
 
 const maxSize = 1000
 
@@ -49,12 +51,13 @@ export const processUrl = async (url, opts = {}) => {
   console.timeEnd(basenameNoExt + ' TOTAL')
   console.log('-------------------------')
 
-  if (opts.debug) {
-    const reduced = fs.createWriteStream(path.join(opts.debug, basenameNoExt + '_reduced.png'))
+  if (process.env.DEBUG === '1') {
+    const debugFolder = process.env.DEBUG_PATH
+    const reduced = fs.createWriteStream(path.join(debugFolder, basenameNoExt + 'A_reduced.png'))
     const stream = canvasFromImageData(imageDataReduced).createPNGStream()
     stream.pipe(reduced)
-    fs.writeFileSync(path.join(opts.debug, basenameNoExt + '_vectorized.svg'), svgVectorized.svg)
-    fs.writeFileSync(path.join(opts.debug, basenameNoExt + '_rearranged.svg'), svgRearranged)
+    fs.writeFileSync(path.join(debugFolder, basenameNoExt + 'B_vectorized.svg'), svgVectorized.svg)
+    fs.writeFileSync(path.join(debugFolder, basenameNoExt + 'C_rearranged.svg'), svgRearranged)
   }
   return {
     resized: imageData,
