@@ -41,7 +41,7 @@ export const rearrange = async (obj) =>
       if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
       return el.area
     }
-    const isTooSmall = (el) => area(el) < 0.025
+    const isTooSmall = (el) => area(el) < 0.02
 
     // DEFINE ALTER ELEMENT
     const alterElement = (el) => {
@@ -56,27 +56,28 @@ export const rearrange = async (obj) =>
       allShapes.push(el)
 
       // GET RANDOM POINT INSIDE CIRCLE AND POSITION
-      const r = h / 2.3 * (random() ** 0.67)
+      const r = h / 2.5 * (random() ** 0.67)
       const theta = random() * 2 * Math.PI
       const x = w / 2 + r * aspectRatio * Math.cos(theta)
       const y = h / 2 + r * Math.sin(theta)
-      el.center(x * 10, y * 10)
 
       // SHUFFLE SIZE AND ROTATION
       let randomScale
       if (area(el) < 0.04) randomScale = random(4, 10)
-      else if (area(el) < 0.1) randomScale = random(2, 6)
-      else if (area(el) > 2) randomScale = random(0.5, 4)
+      else if (area(el) < 0.1) randomScale = random(2, 7)
+      else if (area(el) > 2) randomScale = random(0.5, 5)
       else randomScale = random(1, 5)
 
       el.transform({
         scale: [0.1, -0.1],
         origin: { x: 0, y: -w },
+        // origin: { x: 'center', y: 'center' },
         translate: { x: 0, y: w * 1.7666666 }
       }).transform({
         scale: randomScale,
         rotate: random(0, 360)
       }, true)
+      group.center(x, y)
       // el.area *= randomScale
     }
 
@@ -126,8 +127,8 @@ export const rearrange = async (obj) =>
       </style>
       <filter id="shadow" filterUnits="userSpaceOnUse">
         <feDropShadow dx="0" dy="0" stdDeviation="180" flood-color="#000000" flood-opacity="0.27"/>
-        </filter>
-      </defs>`)
+      </filter>
+    </defs>`)
 
     // REMOVE THE BIGGEST ELEMS
     if (allShapes.length > 5) allShapes[0].parent().hide()
