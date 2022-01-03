@@ -3,6 +3,9 @@ import natsort from 'natsort'
 import { addToQueue } from './queue.js'
 import path from 'path'
 import { writeFileSync } from 'fs'
+import dotenv from 'dotenv'
+dotenv.config()
+
 
 const items = glob.sync('../../Beispielbilder/*')
 items.sort(natsort.default())

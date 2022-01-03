@@ -11,4 +11,8 @@ const url = process.argv[2]
 processUrl(url).then((item) => {
   const exportPath = path.join(process.env.EXPORT_PATH, `${path.basename(url)}.svg`)
   fs.writeFileSync(exportPath, item.rearranged)
+  sharp(exportPath)
+    .png()
+    .toFile("new-file.png")
 })
+
