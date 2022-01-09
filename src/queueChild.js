@@ -1,18 +1,28 @@
-import { processUrl } from './assemblage/assemblage.js'
-import path from 'path'
+import { processUrl } from './assemblage.js'
+import { exec } from 'child_process'
 import fs from 'fs'
+import { exit } from 'process'
+import { logger } from './logger.js';
 
-const url = process.argv[2]
-// const hash = process.argv[3]
-// const otherInfo = process.argv[4]
+const sourceFile = process.argv[2]
+const targetFile = process.argv[3]
+const opts = ((raw) => {
+  try {
+    return JSON.parse(raw)
+  } catch (err) {
+    return {}
+  }
+})(process.argv[4])
 
-// TODO: evaluate argv
+if (sourceFile === '' || targetFile === '') exit(1)
 
-processUrl(url).then((item) => {
-  const exportPath = path.join(process.env.EXPORT_PATH, `${path.basename(url)}.svg`)
-  fs.writeFileSync(exportPath, item.rearranged)
-  sharp(exportPath)
-    .png()
-    .toFile("new-file.png")
+processUrl(sourceFile, opts).then((item) => {
+  fs.writeFileSync(targetFile, item.rearranged)
+  exec(`./bin/resvg "${targetFile}" "${targetFile}.png" -w 2000`,
+    (error) => {
+      if (error !== null) {
+        logger.error(`resvg error: ${error}`)
+        exit(1)
+      }
+    })
 })
-

@@ -22,8 +22,10 @@ export const rearrange = async (obj) =>
 
     // CHANGE ASPECT RATIO OF IMAGE
     const aspectRatio = 3 / 2
-    const h = draw.height()
-    const w = h * aspectRatio
+    const oldH = draw.height()
+    const oldW = oldH * aspectRatio
+    const w = 1050
+    const h = 700
     draw.size(w, h)
 
     // ZOOM IN A LITTLE WITH VIEWBOX
@@ -38,7 +40,7 @@ export const rearrange = async (obj) =>
     const area = (el) => {
       if (!el) return 0
       // return (el.width() * el.height()) / (h * w)
-      if (el.area === undefined) el.area = (el.width() * el.height()) / (h * w)
+      if (el.area === undefined) el.area = (el.width() * el.height()) / (oldH * oldW)
       return el.area
     }
     const isTooSmall = (el) => area(el) < 0.02
@@ -74,7 +76,7 @@ export const rearrange = async (obj) =>
         // origin: { x: 'center', y: 'center' },
         translate: { x: 0, y: w * 1.7666666 }
       }).transform({
-        scale: randomScale,
+        scale: randomScale * (h / oldH),
         rotate: random(0, 360)
       }, true)
       group.center(x, y)
@@ -122,11 +124,10 @@ export const rearrange = async (obj) =>
       <style>
         .s {
           filter: url(#shadow);
-          overflow: visible !important;
         }
       </style>
       <filter id="shadow" filterUnits="userSpaceOnUse">
-        <feDropShadow dx="0" dy="0" stdDeviation="180" flood-color="#000000" flood-opacity="0.27"/>
+        <feDropShadow dx="0" dy="0" stdDeviation="20" flood-color="#000000" flood-opacity="0.3"/>
       </filter>
     </defs>`)
 

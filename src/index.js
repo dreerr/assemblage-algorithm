@@ -1,11 +1,7 @@
-// import logger from 'loglevel'
-// import { startServer } from './start'
+import { addToQueue } from './queue.js'
+import { processUrl } from './assemblage.js'
 
-// const isTest = process.env.NODE_ENV === 'test'
-// const logLevel = process.env.LOG_LEVEL || (isTest ? 'warn' : 'info')
-
-// logger.setLevel(logLevel)
-
-// startServer()
-
-console.log('me is server!');
+export default {
+  addToQueue,
+  processUrl
+}
