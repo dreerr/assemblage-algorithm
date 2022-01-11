@@ -4,7 +4,7 @@ import path from 'path'
 import { quantization } from './quantization.js'
 import { vectorization, canvasFromImageData } from './vectorization.js'
 import { rearrange } from './rearranging.js'
-import {logger} from './logger.js';
+import { logger } from './logger.js'
 const { loadImage, createCanvas } = canvas
 
 const maxSize = 1000

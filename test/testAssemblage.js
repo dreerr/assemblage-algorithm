@@ -1,13 +1,13 @@
 import * as chai from 'chai'
 import chaiAsPromised from 'chai-as-promised'
-chai.use(chaiAsPromised)
-const should = chai.should();
 
 import glob from 'glob'
 import natsort from 'natsort'
 import { addToQueue } from '../src/queue.js'
 import path from 'path'
 import { emptyDirSync, mkdirpSync } from 'fs-extra'
+chai.use(chaiAsPromised)
+const should = chai.should()
 
 describe('Assemblage', () => {
   describe('Test Algorithm', () => {
@@ -17,7 +17,7 @@ describe('Assemblage', () => {
     items.sort(natsort.default())
     emptyDirSync(testDir)
     mkdirpSync(debugDir)
-    it("Examples", async () => {
+    it('Examples', async () => {
       await Promise.all(items.map((item) => {
         const basenameNoExt = path.basename(item).replace(/\.[^/.]+$/, '')
         const outputFile = path.join(testDir, basenameNoExt + '.svg')
