@@ -25,12 +25,12 @@ export const processUrl = async (url, opts = {}) => {
 
   // 2: vectorize image
   logger.profile(basenameNoExt + " Vectorizing")
-  const svgVectorized = await vectorization(imageDataReduced)
+  const { svg: svgVectorized, colors } = await vectorization(imageDataReduced)
   logger.profile(basenameNoExt + " Vectorizing")
 
   // 3: rearrange the vectorized data
   logger.profile(basenameNoExt + " Rearranging")
-  const svgRearranged = await rearrange(svgVectorized)
+  const svgRearranged = await rearrange({ svg: svgVectorized, colors, ...opts })
   logger.profile(basenameNoExt + " Rearranging")
 
   logger.profile(basenameNoExt + " TOTAL")
@@ -44,7 +44,7 @@ export const processUrl = async (url, opts = {}) => {
     stream.pipe(reduced)
     fs.writeFileSync(
       path.join(debugPath, basenameNoExt + "B_vectorized.svg"),
-      svgVectorized.svg
+      svgVectorized
     )
     fs.writeFileSync(
       path.join(debugPath, basenameNoExt + "C_rearranged.svg"),

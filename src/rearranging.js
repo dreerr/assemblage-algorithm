@@ -2,22 +2,22 @@ import { SVG, registerWindow } from "@svgdotjs/svg.js"
 import { createSVGWindow } from "svgdom"
 import "@svgdotjs/svg.filter.js"
 import pkg from "seedrandom"
-const { alea } = pkg
+const { alea: Alea } = pkg
 
 // register window and document
 const window = createSVGWindow()
 const document = window.document
 registerWindow(window, document)
 
-export const rearrange = async (obj) =>
+export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
   new Promise((resolve) => {
     // INITALIZE RANDOMNESS
-    // eslint-disable-next-line new-cap
-    const rs = new alea(obj.svg)
+    console.log(seed)
+    const rs = new Alea(seed)
     const random = (min = 0, max = 1) => rs() * (max - min) + min
 
     // DRAW SVG
-    const draw = SVG(obj.svg).addTo(document.documentElement)
+    const draw = SVG(svg).addTo(document.documentElement)
     draw.attr("xmlns", "http://www.w3.org/2000/svg")
 
     // CHANGE ASPECT RATIO OF IMAGE
@@ -124,12 +124,9 @@ export const rearrange = async (obj) =>
     allShapes.forEach((el) => el.parent().addTo(draw))
 
     // SET BACKGROUND
-    const colorsArray = Object.values(obj.colors)
+    const colorsArray = Object.values(colors)
     const i = colorsArray.indexOf(Math.max(...colorsArray))
-    const dominantColor = `rgb(${Object.keys(obj.colors)[i].replace(
-      /,\d+$/,
-      ""
-    )})`
+    const dominantColor = `rgb(${Object.keys(colors)[i].replace(/,\d+$/, "")})`
     const rect = SVG().rect(w, h).fill(dominantColor)
     rect.insertBefore(draw.first())
 
