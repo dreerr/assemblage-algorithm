@@ -23,14 +23,11 @@ processUrl(sourceFile, opts).then((item) => {
   fs.writeFileSync(targetFile, item.rearranged)
   const targetFileRender = targetFile.replace(/\.[^/.]+$/, "") + ".png"
   const resvg = `${__dirname}/../bin/resvg_${process.platform}`
-  if(!fs.existsSync(resvg)) exit(1)
-  exec(
-    `"${resvg}" "${targetFile}" "${targetFileRender}" -w 2000`,
-    (error) => {
-      if (error !== null) {
-        logger.error(`resvg error: ${error}`)
-        exit(1)
-      }
+  if (!fs.existsSync(resvg)) exit(1)
+  exec(`"${resvg}" "${targetFile}" "${targetFileRender}" -w 2000`, (error) => {
+    if (error !== null) {
+      logger.error(`resvg error: ${error}`)
+      exit(1)
     }
-  )
+  })
 })

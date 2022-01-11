@@ -15,21 +15,7 @@ export const processUrl = async (url, opts = {}) => {
 
   // LOAD AND SCALE IMAGE
   logger.profile(basenameNoExt + " Scaling")
-  const img = await loadImage(url)
-  let w = img.width
-  let h = img.height
-  if (w > maxSize && w >= h) {
-    h *= maxSize / w
-    w = maxSize
-  } else if (h > maxSize) {
-    w *= maxSize / h
-    h = maxSize
-  }
-  const canvas = createCanvas(w, h)
-  const context = canvas.getContext("2d")
-  context.imageSmoothingEnabled = false
-  context.drawImage(img, 0, 0, w, h)
-  const imageData = context.getImageData(0, 0, w, h)
+  const imageData = await scaling(url)
   logger.profile(basenameNoExt + " Scaling")
 
   // 1: reduce colors of image
@@ -71,4 +57,23 @@ export const processUrl = async (url, opts = {}) => {
     vectorized: svgVectorized,
     rearranged: svgRearranged,
   }
+}
+
+const scaling = async (url) => {
+  const isSvg = url.toLowerCase().endsWith(".svg")
+  const img = await loadImage(url)
+  let w = img.width
+  let h = img.height
+  if ((w > maxSize && w >= h) || isSvg) {
+    h *= maxSize / w
+    w = maxSize
+  } else if (h > maxSize || isSvg) {
+    w *= maxSize / h
+    h = maxSize
+  }
+  const canvas = createCanvas(w, h)
+  const context = canvas.getContext("2d")
+  context.imageSmoothingEnabled = false
+  context.drawImage(img, 0, 0, w, h)
+  return context.getImageData(0, 0, w, h)
 }
