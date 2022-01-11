@@ -1,6 +1,6 @@
-import pkg from 'canvas'
+import pkg from "canvas"
 
-import { loadFromCanvas } from 'potrace-wasm'
+import { loadFromCanvas } from "potrace-wasm"
 const { createCanvas, createImageData } = pkg
 // import { potrace, init } from 'esm-potrace-wasm';
 
@@ -19,7 +19,7 @@ export const vectorization = async (imageData) => {
     opttolerance: 0.2,
     pathonly: false,
     strokeWidth: 10,
-    minPathSegments: 10
+    minPathSegments: 10,
   }
   const obj = await convertToColorSVG(imageData, params)
   return obj
@@ -27,7 +27,7 @@ export const vectorization = async (imageData) => {
 
 export const canvasFromImageData = (imageData) => {
   const canvas = createCanvas(imageData.width, imageData.height)
-  const context = canvas.getContext('2d')
+  const context = canvas.getContext("2d")
   context.putImageData(imageData, 0, 0)
   return canvas
 }
@@ -55,9 +55,9 @@ const extractColors = (imageData) => {
 const convertToColorSVG = async (imageData, params) => {
   const colors = extractColors(imageData)
 
-  let prefix = ''
-  let suffix = ''
-  let svgString = ''
+  let prefix = ""
+  let suffix = ""
+  let svgString = ""
 
   const promises = []
   // eslint-disable-next-line no-unused-vars
@@ -78,15 +78,20 @@ const convertToColorSVG = async (imageData, params) => {
       // eslint-disable-next-line no-async-promise-executor
       return new Promise(async (resolve) => {
         colorDominances[color] = len / imageData.data.length
-        let svg = await loadFromCanvas(canvasFromImageData(newImageData), params)
+        let svg = await loadFromCanvas(
+          canvasFromImageData(newImageData),
+          params
+        )
         // let svg = await potrace(newImageData, params)
         newImageData = null
-        const [r, g, b, a] = color.split(',')
+        const [r, g, b, a] = color.split(",")
         const alpha = (a / 255).toFixed(2)
         svg = svg.replace(
           'fill="#000000" stroke="none"',
           `fill="rgb(${r},${g},${b})" stroke="rgb(${r},${g},${b})"${
-            a === '255' ? '' : ` fill-opacity="${alpha}" stroke-opacity="${alpha}"`
+            a === "255"
+              ? ""
+              : ` fill-opacity="${alpha}" stroke-opacity="${alpha}"`
           } stroke-width="${params.strokeWidth}px"`
         )
         const pathRegEx = /<path\s*d="([^"]+)"\/>/g
@@ -94,19 +99,19 @@ const convertToColorSVG = async (imageData, params) => {
         const shortPaths = []
         while ((matches = pathRegEx.exec(svg)) !== null) {
           const path = matches[1]
-          if (path.split(' ').length < params.minPathSegments) {
+          if (path.split(" ").length < params.minPathSegments) {
             shortPaths.push(matches[0])
           }
         }
         shortPaths.forEach((path) => {
-          svg = svg.replace(path, '')
+          svg = svg.replace(path, "")
         })
         processed++
         if (!/<path/.test(svg)) {
           // if (total === processed) {
           //   console.log('Potraced 100% %c■■', `color: rgba(${color})`, len / imageData.data.length)
           // }
-          resolve('')
+          resolve("")
           return
         }
         // console.log(
@@ -132,14 +137,14 @@ const convertToColorSVG = async (imageData, params) => {
 
   for (const svg of svgs.flat()) {
     if (!prefix) {
-      prefix = svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, '$1')
-      suffix = svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, '$3')
+      prefix = svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, "$1")
+      suffix = svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, "$3")
       svgString = prefix
     }
-    svgString += svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, '$2')
+    svgString += svg.replace(/(.*?<svg[^>]+>)(.*?)(<\/svg>)/, "$2")
   }
   svgString += suffix
-  svgString = svgString.replace(/.*?<!DOCTYPE[^>]+>/, '')
+  svgString = svgString.replace(/.*?<!DOCTYPE[^>]+>/, "")
   return { svg: svgString, colors: colorDominances }
 }
 
