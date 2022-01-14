@@ -26,7 +26,8 @@ processUrl(sourceFile, opts).then((item) => {
   const targetFileRender = targetFile.replace(/\.[^/.]+$/, "") + ".png"
   const resvg = `${__dirname}/../bin/resvg_${process.platform}`
   if (!fs.existsSync(resvg)) exit(1)
-  exec(`"${resvg}" "${targetFile}" "${targetFileRender}" -w 2000`, (error) => {
+  const renderSize = opts.renderSize || 2000
+  exec(`"${resvg}" "${targetFile}" "${targetFileRender}" -w ${renderSize}`, (error) => {
     if (error !== null) {
       logger.error(`resvg error: ${error}`)
       exit(1)

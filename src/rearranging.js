@@ -2,6 +2,7 @@ import { SVG, registerWindow } from "@svgdotjs/svg.js"
 import { createSVGWindow } from "svgdom"
 import "@svgdotjs/svg.filter.js"
 import pkg from "seedrandom"
+import { logger } from "./logger.js"
 const { alea: Alea } = pkg
 
 // register window and document
@@ -71,7 +72,7 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
       // SHUFFLE SIZE AND ROTATION
       let randomScale
       if (area(el) < 0.04) randomScale = random(4, 10)
-      else if (area(el) < 0.1) randomScale = random(2, 7)
+      else if (area(el) < 0.1) randomScale = random(1, 9)
       else if (area(el) > 2) randomScale = random(0.5, 5)
       else randomScale = random(1, 5)
 
@@ -92,13 +93,13 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
     }
 
     // ITERATE OVER THE COLOR GROUPS AND RANDOMLY PICK ELEMENTS
-    const maxItems = Math.floor(80 / draw.children().length)
+    const maxItemsPerColor = Math.floor(80 / draw.children().length)
 
     colorGroups.forEach((colorGroup) => {
       let numElems = 0
 
       // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
-      for (let i = 0; i < 100; i += 1) {
+      for (let i = 0; i < 350; i += 1) {
         const randomIdx = Math.floor(
           random(0, colorGroup.children().length - 1)
         )
@@ -106,7 +107,7 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
         if (!isTooSmall(el)) {
           alterElement(el)
           numElems += 1
-          if (numElems >= maxItems) break
+          if (numElems >= maxItemsPerColor) break
           if (colorGroup.children().length === 0) break
         }
       }

@@ -21,8 +21,8 @@ describe('Assemblage', () => {
       await Promise.all(items.map((item) => {
         const basenameNoExt = path.basename(item).replace(/\.[^/.]+$/, '')
         const outputFile = path.join(testDir, basenameNoExt + '.svg')
-        return addToQueue(item, outputFile, { debug: debugDir })
+        return addToQueue(item, outputFile, { debug: debugDir, renderSize: 2000 })
       }))
-    }).timeout(300000)
+    }).timeout(1000000)
   })
 })

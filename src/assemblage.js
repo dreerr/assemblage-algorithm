@@ -35,17 +35,22 @@ export const processUrl = async (url, opts = {}) => {
 
   if (opts.debug) {
     const debugPath = opts.debug
-    const reduced = fs.createWriteStream(
-      path.join(debugPath, basenameNoExt + "A_reduced.png")
+    const scaled = fs.createWriteStream(
+      path.join(debugPath, basenameNoExt + "A_scaled.png")
     )
-    const stream = canvasFromImageData(imageDataReduced).createPNGStream()
-    stream.pipe(reduced)
+    const scaledStream = canvasFromImageData(imageData).createPNGStream()
+    scaledStream.pipe(scaled)
+    const reduced = fs.createWriteStream(
+      path.join(debugPath, basenameNoExt + "B_reduced.png")
+    )
+    const reducedStream = canvasFromImageData(imageDataReduced).createPNGStream()
+    reducedStream.pipe(reduced)
     fs.writeFileSync(
-      path.join(debugPath, basenameNoExt + "B_vectorized.svg"),
+      path.join(debugPath, basenameNoExt + "C_vectorized.svg"),
       svgVectorized
     )
     fs.writeFileSync(
-      path.join(debugPath, basenameNoExt + "C_rearranged.svg"),
+      path.join(debugPath, basenameNoExt + "D_rearranged.svg"),
       svgRearranged
     )
   }
