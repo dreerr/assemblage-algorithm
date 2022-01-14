@@ -9,7 +9,7 @@
   "scripts": {
     "dev": "export NODE_ENV=development && nodemon ./src/index.js",
     "start": "export NODE_ENV=production && node ./src/index.js",
-    "lint": "npx prettier --write src/; ./node_modules/.bin/eslint src/ --ext .js",
+    "lint": "npx prettier --write ./; ./node_modules/.bin/eslint ./ --ext .js",
     "test": "mocha"
   },
   "dependencies": {

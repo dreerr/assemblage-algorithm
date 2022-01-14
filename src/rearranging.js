@@ -2,7 +2,6 @@ import { SVG, registerWindow } from "@svgdotjs/svg.js"
 import { createSVGWindow } from "svgdom"
 import "@svgdotjs/svg.filter.js"
 import pkg from "seedrandom"
-import { logger } from "./logger.js"
 const { alea: Alea } = pkg
 
 // register window and document
