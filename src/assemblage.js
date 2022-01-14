@@ -11,29 +11,27 @@ const maxSize = 1000
 
 export const processUrl = async (url, opts = {}) => {
   const basenameNoExt = path.basename(url).replace(/\.[^/.]+$/, "")
-  logger.profile(basenameNoExt + " TOTAL")
+  logger.debug(`Processing ${url}`)
 
   // LOAD AND SCALE IMAGE
-  logger.profile(basenameNoExt + " Scaling")
+  logger.profile("Scaling")
   const imageData = await scaling(url)
-  logger.profile(basenameNoExt + " Scaling")
+  logger.profile("Scaling", { level: "debug" })
 
   // 1: reduce colors of image
-  logger.profile(basenameNoExt + " Reducing")
+  logger.profile("Reducing")
   const imageDataReduced = await quantization(imageData)
-  logger.profile(basenameNoExt + " Reducing")
+  logger.profile("Reducing", { level: "debug" })
 
   // 2: vectorize image
-  logger.profile(basenameNoExt + " Vectorizing")
+  logger.profile("Vectorizing")
   const { svg: svgVectorized, colors } = await vectorization(imageDataReduced)
-  logger.profile(basenameNoExt + " Vectorizing")
+  logger.profile("Vectorizing", { level: "debug" })
 
   // 3: rearrange the vectorized data
-  logger.profile(basenameNoExt + " Rearranging")
+  logger.profile("Rearranging")
   const svgRearranged = await rearrange({ svg: svgVectorized, colors, ...opts })
-  logger.profile(basenameNoExt + " Rearranging")
-
-  logger.profile(basenameNoExt + " TOTAL")
+  logger.profile("Rearranging", { level: "debug" })
 
   if (opts.debug) {
     const debugPath = opts.debug

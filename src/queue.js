@@ -2,6 +2,7 @@ import queue from "childprocess-queue"
 import { cpus } from "os"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
+import { logger } from "./logger.js"
 
 const processQueue = queue.newQueue()
 processQueue.setMaxProcesses(cpus().length - 1)
@@ -16,7 +17,7 @@ export const addToQueue = (sourceFile, targetFile, opts = {}) => {
       {
         onCreate: (child) => {
           child.on("message", (msg) => {
-            console.log("message from child", msg)
+            logger.warn("message from child", msg)
           })
 
           child.on("close", (msg) => {

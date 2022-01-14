@@ -12,7 +12,6 @@ registerWindow(window, document)
 export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
   new Promise((resolve) => {
     // INITALIZE RANDOMNESS
-    console.log(seed)
     const rs = new Alea(seed)
     const random = (min = 0, max = 1) => rs() * (max - min) + min
 

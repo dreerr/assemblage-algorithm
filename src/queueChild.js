@@ -19,8 +19,10 @@ const opts = ((raw) => {
 
 if (sourceFile === "" || targetFile === "") exit(1)
 
+logger.profile("TOTAL")
 processUrl(sourceFile, opts).then((item) => {
   fs.writeFileSync(targetFile, item.rearranged)
+  logger.profile("Rendering")
   const targetFileRender = targetFile.replace(/\.[^/.]+$/, "") + ".png"
   const resvg = `${__dirname}/../bin/resvg_${process.platform}`
   if (!fs.existsSync(resvg)) exit(1)
@@ -28,6 +30,9 @@ processUrl(sourceFile, opts).then((item) => {
     if (error !== null) {
       logger.error(`resvg error: ${error}`)
       exit(1)
+    } else {
+      logger.profile("Rendering", { level: "debug" })
+      logger.profile("TOTAL", { level: "debug" })
     }
   })
 })

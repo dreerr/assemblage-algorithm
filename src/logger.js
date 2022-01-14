@@ -1,10 +1,10 @@
 import winston from "winston"
-
+const logLevel = process.env.NODE_ENV === "production" ? "info" : "debug"
 
 export const logger = winston.createLogger({
   transports: [
     new winston.transports.Console({
-      level: "debug",
+      level: logLevel,
       format: winston.format.combine(
         winston.format.colorize(),
         winston.format.simple()
@@ -12,7 +12,7 @@ export const logger = winston.createLogger({
     }),
     new winston.transports.File({
       filename: "log/combined.log",
-      level: "info",
+      level: logLevel,
     }),
     new winston.transports.File({
       filename: "log/errors.log",

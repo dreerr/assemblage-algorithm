@@ -16,13 +16,13 @@ describe('Assemblage', () => {
     const debugDir = './test-results/debug/'
     items.sort(natsort.default())
     emptyDirSync(testDir)
-    mkdirpSync(debugDir)
+    emptyDirSync(debugDir)
     it('Examples', async () => {
       await Promise.all(items.map((item) => {
         const basenameNoExt = path.basename(item).replace(/\.[^/.]+$/, '')
         const outputFile = path.join(testDir, basenameNoExt + '.svg')
         return addToQueue(item, outputFile, { debug: debugDir })
       }))
-    }).timeout(3000000)
+    }).timeout(300000)
   })
 })
