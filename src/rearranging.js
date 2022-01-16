@@ -98,11 +98,11 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
       let numElems = 0
 
       // TRY MAX 100 TIMES TO GET RANDOM ITEMS WHICH ARE NOT TOO SMALL
+      // as an artistic touch we decided to make this 350
       for (let i = 0; i < 350; i += 1) {
-        const randomIdx = Math.floor(
-          random(0, colorGroup.children().length - 1)
-        )
-        const el = colorGroup.get(i === 0 ? 0 : randomIdx)
+        const randomIdx =
+          i === 0 ? 0 : Math.floor(random(0, colorGroup.children().length - 1))
+        const el = colorGroup.get(randomIdx)
         if (!isTooSmall(el)) {
           alterElement(el)
           numElems += 1
@@ -145,5 +145,6 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
     if (allShapes.length > 5) allShapes[0].parent().remove()
     if (allShapes.length > 10) allShapes[1].parent().remove()
 
+    // PRAY TO THE SVG GOD
     resolve(draw.svg())
   })

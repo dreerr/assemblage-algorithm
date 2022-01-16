@@ -36,8 +36,7 @@ export const assemblage = async (source, target, opts = {}) => {
   // 4. REARRANGE THE VECTORIZED DATA
   logger.profile("Rearranging")
   data.rearranged = await rearrange({
-    svg: data.vectorized.svg,
-    colors: data.vectorized.colors,
+    ...data.vectorized,
     ...opts,
   })
   fs.writeFileSync(target, data.rearranged)
@@ -91,7 +90,6 @@ const rendering = (target, opts) =>
           logger.error(`resvg error: ${error}`)
           reject(error)
         } else {
-          logger.debug("resolving here!")
           resolve(targetRender)
         }
       }
