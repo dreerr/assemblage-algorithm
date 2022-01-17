@@ -10,7 +10,7 @@ chai.use(chaiAsPromised)
 
 describe("Assemblage", () => {
   describe("Test Algorithm", () => {
-    const items = glob.sync("../../Edi/*")
+    const items = glob.sync("../../Tschuuuly/*")
     const testDir = "./test-results/"
     const debugDir = "./test-results/debug/"
     items.sort(natsort.default())
