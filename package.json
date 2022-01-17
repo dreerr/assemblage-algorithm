@@ -9,8 +9,9 @@
   "scripts": {
     "dev": "export NODE_ENV=development && nodemon ./src/index.js",
     "start": "export NODE_ENV=production && node ./src/index.js",
-    "lint": "npx prettier --write ./; ./node_modules/.bin/eslint ./ --ext .js",
-    "test": "mocha"
+    "lint": "prettier --write ./; ./node_modules/.bin/eslint ./ --ext .js",
+    "test": "mocha",
+    "build": "nexe --build -i src/cli.js -r ./lib/* -o ./dist/assemblage"
   },
   "bin": {
     "assemblage": "./src/cli.js"

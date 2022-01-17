@@ -80,7 +80,7 @@ const scaling = async (path) => {
 const rendering = (target, opts) =>
   new Promise((resolve, reject) => {
     const targetRender = target.replace(/\.[^/.]+$/, "") + ".png"
-    const resvg = `${__dirname}/../bin/resvg_${process.platform}`
+    const resvg = `${__dirname}/../lib/resvg_${process.platform}`
     if (!fs.existsSync(resvg)) reject(Error("resvg binary not found"))
     const renderSize = opts.renderSize || 2000
     exec(
