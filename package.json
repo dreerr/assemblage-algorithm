@@ -16,20 +16,13 @@
   "bin": {
     "assemblage": "./src/cli.js"
   },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ],
-    "plugins": [
-      "babel-plugin-transform-import-meta"
-    ]
-  },
   "dependencies": {
     "@svgdotjs/svg.filter.js": "^3.0.8",
     "@svgdotjs/svg.js": "^3.1.1",
-    "canvas": "file:../node-canvas",
+    "canvas": "^2.8.0",
     "childprocess-queue": "^1.0.2",
     "commander": "^8.3.0",
+    "colors": "^1.4.0",
     "fs": "^0.0.1-security",
     "glob": "^7.2.0",
     "natsort": "^2.0.3",
@@ -40,12 +33,6 @@
     "winston": "^3.3.3"
   },
   "devDependencies": {
-    "@babel/cli": "^7.16.8",
-    "@babel/core": "^7.16.7",
-    "@babel/node": "^7.16.8",
-    "@babel/preset-env": "^7.16.8",
-    "babel-plugin-transform-import-meta": "^2.1.0",
-    "babel-preset-es2015": "^6.24.1",
     "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
     "eslint": "^7.32.0",
@@ -56,6 +43,7 @@
     "eslint-plugin-promise": "^5.2.0",
     "fs-extra": "^10.0.0",
     "mocha": "^9.1.3",
+    "nexe": "^4.0.0-beta.19",
     "nodemon": "^2.0.15",
     "prettier": "2.5.1"
   }
