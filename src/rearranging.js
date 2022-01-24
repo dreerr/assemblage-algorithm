@@ -72,8 +72,8 @@ export const rearrange = async ({ svg, colors, seed = "0x0" }) =>
       let randomScale
       if (area(el) < 0.04) randomScale = random(4, 10)
       else if (area(el) < 0.1) randomScale = random(1, 9)
-      else if (area(el) > 2) randomScale = random(0.5, 5)
-      else randomScale = random(1, 5)
+      else if (area(el) > 2) randomScale = random(0.5, 2)
+      else randomScale = random(1, 3)
 
       el.transform({
         scale: [0.1, -0.1],
