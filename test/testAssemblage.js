@@ -10,9 +10,9 @@ chai.use(chaiAsPromised)
 
 describe("Assemblage", () => {
   describe("Test Algorithm", () => {
-    const items = glob.sync("../../Tschuuuly/*")
-    const testDir = "./test-results/"
-    const debugDir = "./test-results/debug/"
+    const items = glob.sync("../../Beispielbilder/Marketing/**/*.*")
+    const testDir = "./test-results-marketing-seed-with-comparison/"
+    const debugDir = "./test-results-marketing-seed-with-comparison/debug/"
     items.sort(natsort.default())
     emptyDirSync(testDir)
     emptyDirSync(debugDir)
@@ -22,8 +22,9 @@ describe("Assemblage", () => {
           const basenameNoExt = path.basename(item).replace(/\.[^/.]+$/, "")
           const outputFile = path.join(testDir, basenameNoExt + ".svg")
           return addToQueue(item, outputFile, {
-            debug: debugDir,
+            // debug: debugDir,
             renderSize: 3000,
+            seed: "1337",
           }).catch(() => {}) //
         })
       )
