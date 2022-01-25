@@ -11,8 +11,8 @@ chai.use(chaiAsPromised)
 describe("Assemblage", () => {
   describe("Test Algorithm", () => {
     const items = glob.sync("../../Beispielbilder/Marketing/**/*.*")
-    const testDir = "./test-results-marketing-seed-with-comparison/"
-    const debugDir = "./test-results-marketing-seed-with-comparison/debug/"
+    const testDir = "./test-results-final-seed-with-comparison/"
+    const debugDir = "./test-results-final-seed-with-comparison/debug/"
     items.sort(natsort.default())
     emptyDirSync(testDir)
     emptyDirSync(debugDir)
@@ -24,7 +24,7 @@ describe("Assemblage", () => {
           return addToQueue(item, outputFile, {
             // debug: debugDir,
             renderSize: 3000,
-            seed: "1337",
+            // seed: "1337",
           }).catch(() => {}) //
         })
       )
