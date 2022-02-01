@@ -9,16 +9,19 @@ export const scaling = async (path, opts) => {
   const isSvg = path.toLowerCase().endsWith(".svg")
   if (isSvg && opts.backgroundColor === undefined) {
     const svg = fs.readFileSync(path).toString()
-    const match = svg.match(/<svg[^>]+background-color:\s*(.+?);*['"]/)
+    const match = svg.match(/<svg[^>]+background-color:\s*(.+?)[;'"]/)
     if (match) {
       opts.backgroundColor = match[1]
     }
   }
-  if(opts.backgroundColor) {
+  if (opts.backgroundColor) {
     logger.debug(`Detected background-color '${opts.backgroundColor}'`)
   }
   if (isSvg) {
-    path = await rendering(path, { renderSize: maxSize })
+    path = await rendering(path, {
+      renderSize: maxSize,
+      backgroundColor: opts.backgroundColor,
+    })
   }
   const img = await loadImage(path)
   let w = img.width

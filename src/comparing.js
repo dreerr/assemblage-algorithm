@@ -8,6 +8,8 @@ const h = 900
 export const comparing = async (source, target) => {
   const basenameNoExt = target.replace(/\.[^/.]+$/, "")
   target = basenameNoExt + ".png"
+  const renderedSource = source.replace(/\.[^.]+$/, "") + ".png"
+  source = fs.existsSync(renderedSource) ? renderedSource : source
   const sourceImage = await loadImage(source)
   const aspectRatio = sourceImage.width / sourceImage.height
   const targetImage = await loadImage(target)

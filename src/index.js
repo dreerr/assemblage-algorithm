@@ -1,2 +1,2 @@
 export { assemblage } from "./assemblage.js"
-export { addToQueue } from "./queue.js"
+export { addToQueue, currentProcessCount } from "./queue.js"

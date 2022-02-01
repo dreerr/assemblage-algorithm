@@ -5,7 +5,7 @@ import { fileURLToPath } from "url"
 import { logger } from "./logger.js"
 
 const processQueue = queue.newQueue()
-processQueue.setMaxProcesses(cpus().length - 1)
+processQueue.setMaxProcesses(cpus().length)
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
@@ -37,3 +37,5 @@ export const addToQueue = (sourceFile, targetFile, opts = {}) => {
     )
   })
 }
+
+export const currentProcessCount = () => processQueue.getCurrentProcessCount()
