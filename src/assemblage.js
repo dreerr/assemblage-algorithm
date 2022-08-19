@@ -42,7 +42,7 @@ export const assemblage = async (source, target, opts = {}) => {
   data.rendered = await rendering(target, opts)
   logger.profile("Rendering", { level: "debug" })
 
-  // 6. MAKE SCREENSHOT PNG
+  // 6. MAKE SIDE BY SIDE VIEW
   logger.profile("Comparing")
   data.compared = await comparing(source, target)
   logger.profile("Comparing", { level: "debug" })
